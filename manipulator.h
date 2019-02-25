@@ -11,7 +11,8 @@ namespace MTNELL004{
 	void extract(int i, std::string file_name);
 	void noOptionBuild(void);
 	void rowExtract(int i);
+	void getHeaderFileInfo(std::string base);
+	void loadImage(void);
 }
-
 
 #endif
