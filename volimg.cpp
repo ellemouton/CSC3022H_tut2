@@ -9,9 +9,8 @@ int main(int argc, char * argv[]){
 	if(argc>1){
 		std::string base = argv[1];
 
-		//get header file info
-		MTNELL004::getHeaderFileInfo(base);
-		MTNELL004::loadImage();
+		//create new VolImage instance
+		MTNELL004::VolImage images;
 
 		//determine which option the user is choosing
 		int i;
@@ -20,30 +19,32 @@ int main(int argc, char * argv[]){
 
 		switch(argc){
 			case 2:
-				MTNELL004::noOptionBuild();
+				//no arguments provided
 				break;
 
 			case 6:
 				i = MTNELL004::convertToInt(std::string(argv[3]));
 				j = MTNELL004::convertToInt(std::string(argv[4]));
 				file_name = std::string(argv[5]);
-				MTNELL004::differenceMap(i,j,file_name);
+				images.diffmap(i,j,file_name);
 				break;
 
 			case 5:
 				i = MTNELL004::convertToInt(std::string(argv[3]));
 				file_name = std::string(argv[4]);
-				MTNELL004::extract(i, file_name);
+				images.extract(i, file_name);
 				break;
 
 			case 4:
 				i = MTNELL004::convertToInt(std::string(argv[3]));
-				MTNELL004::rowExtract(i);
+				images.rowExtract(i);
 				break;
 
 			default:
 				std::cout << "invalid number of arguments\n";
 		}
+
+
 	}
 	else{
 		std::cout << "invalid number of arguments\n";
