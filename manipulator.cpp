@@ -21,7 +21,9 @@ MTNELL004::VolImage::VolImage(){
 }
 
 MTNELL004::VolImage::~VolImage(){
-
+	for(int i=0; i<slices.size(); i++){
+		delete[] slices[i];
+	}
 }
 
 void MTNELL004::VolImage::diffmap(int sliceI, int sliceJ, std::string output_prefix){
@@ -79,16 +81,32 @@ bool MTNELL004::VolImage::readImages(std::string baseName){
 
 
 		// get length of file:
-	    myfile.seekg (0, myfile.end);
-	    int length = myfile.tellg();
-	    myfile.seekg (0, myfile.beg);
+		int length = height*width;
 
+		//create a memory block for it
 	    char* img = new char[length];
 
-	    myfile.read (img,length);
+	    //read in from binary file. "img" pointer points to wehere it is stored
+	    myfile.read (img,1);
 
+	    unsigned char *uimg = (unsigned char *)img;
 	    
+	    //int h = *( ( int * )(uimg));
+	    //std::cout <<h <<"\n";
 
+	    //create a new 2D array
+	    unsigned char** newSlice = new unsigned char* [height];
+	    int index = 0;
+
+	    for(int r = 0; r<height; r++){
+	    	newSlice[r] = new unsigned char[width];
+	    	for(int c = 0; c< width; c++){
+	    		newSlice[r][c] = uimg[index];
+	    		index++;
+	    	}
+	    }
+
+	    slices.push_back(newSlice);
 	    delete[] img;
 
 		myfile.close();
