@@ -67,10 +67,49 @@ void MTNELL004::VolImage::diffmap(int sliceI, int sliceJ, std::string output_pre
   	myfile.close();
 
     delete[] diffSlice;
+    delete[] img;
 }
 
 void MTNELL004::VolImage::extract(int sliceId, std::string output_prefix){
 	std::cout << "Extract\n";
+
+	//create output file name and header file name
+	std::stringstream file;
+	std::stringstream hFile;
+	file << output_prefix <<".raw";
+	hFile << output_prefix <<".dat";
+	std::string raw_file = file.str();
+	std::string header_file = hFile.str();
+
+    // get length of output file:
+	int length = height*width;
+
+    //create a memory block 
+	char* img = new char[length];
+
+	//read from 2D array into 1D array
+	int index = 0;
+    for(int r = 0; r<height; r++){
+    	for(int c = 0; c< width; c++){
+    		img[index] = slices[sliceId][r][c];
+    		index++;
+    	}
+    }
+
+    //create output file
+    std::ofstream myfile;
+  	myfile.open (raw_file,  std::ios::out | std::ios::binary);
+  	myfile.write (img,length);
+  	myfile.close();
+
+  	//create header file
+  	std::ofstream myHeaderFile;
+  	myHeaderFile.open (header_file);
+    myHeaderFile << width<<" "<<height<< " 1";
+    myHeaderFile.close();
+
+    delete[] img;
+
 }
 
 void MTNELL004::VolImage::rowExtract(int sliceId){
