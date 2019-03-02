@@ -6,6 +6,7 @@
 # include <string>
 # include <sstream>
 # include <fstream>
+# include <cmath>
 # include "manipulator.h"
 
 int MTNELL004::convertToInt(std::string str){
@@ -28,6 +29,44 @@ MTNELL004::VolImage::~VolImage(){
 
 void MTNELL004::VolImage::diffmap(int sliceI, int sliceJ, std::string output_prefix){
 	std::cout << "Difference Map\n";
+
+	//create output file name
+	std::stringstream file;
+	file << output_prefix <<".raw";
+	std::string raw_file = file.str();
+
+	//create and populate new difference image
+	unsigned char** diffSlice = new unsigned char* [height];
+
+    for(int r = 0; r<height; r++){
+    	diffSlice[r] = new unsigned char[width];
+    	for(int c = 0; c< width; c++){
+    		diffSlice[r][c] = (unsigned char)(abs((float)slices[sliceI][r][c] - (float)slices[sliceJ][r][c])/2);
+    	}
+    }
+
+    // get length of output file:
+	int length = height*width;
+
+    //create a memory block 
+	char* img = new char[length];
+
+	//read from 2D array into 1D array
+	int index = 0;
+    for(int r = 0; r<height; r++){
+    	for(int c = 0; c< width; c++){
+    		img[index] = diffSlice[r][c];
+    		index++;
+    	}
+    }
+
+    //create output file
+    std::ofstream myfile;
+  	myfile.open (raw_file,  std::ios::out | std::ios::binary);
+  	myfile.write (img,length);
+  	myfile.close();
+
+    delete[] diffSlice;
 }
 
 void MTNELL004::VolImage::extract(int sliceId, std::string output_prefix){
@@ -79,7 +118,6 @@ bool MTNELL004::VolImage::readImages(std::string baseName){
 			return false;
 		}
 
-
 		// get length of file:
 		int length = height*width;
 
@@ -87,7 +125,7 @@ bool MTNELL004::VolImage::readImages(std::string baseName){
 	    char* img = new char[length];
 
 	    //read in from binary file. "img" pointer points to wehere it is stored
-	    myfile.read (img,1);
+	    myfile.read (img,length);
 
 	    unsigned char *uimg = (unsigned char *)img;
 	    
@@ -113,7 +151,8 @@ bool MTNELL004::VolImage::readImages(std::string baseName){
 
 	}
 
-	
+	std::cout << "Number of images: "<<num_images<<"\n";
+	std::cout << "Number of bytes required: "<<"TO-DO"<<"\n";
 
 	return true;
 }
