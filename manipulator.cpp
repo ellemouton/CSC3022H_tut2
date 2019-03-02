@@ -114,6 +114,44 @@ void MTNELL004::VolImage::extract(int sliceId, std::string output_prefix){
 
 void MTNELL004::VolImage::rowExtract(int sliceId){
 	std::cout << "Row Extract\n";
+
+	//create output file name and header file name
+	std::stringstream file;
+	std::stringstream hFile;
+	file << "output.raw";
+	hFile << "output.dat";
+	std::string raw_file = file.str();
+	std::string header_file = hFile.str();
+
+    // get length of output file:
+    int num_images = slices.size();
+	int length = num_images*width;
+
+    //create a memory block 
+	char* img = new char[length];
+
+	//read from 2D array into 1D array
+	int index = 0;
+    for(int n = 0; n<num_images; n++){
+    	for(int c = 0; c< width; c++){
+    		img[index] = slices[n][sliceId][c];
+    		index++;
+    	}
+    }
+
+    //create output file
+    std::ofstream myfile;
+  	myfile.open (raw_file,  std::ios::out | std::ios::binary);
+  	myfile.write (img,length);
+  	myfile.close();
+
+  	//create header file
+  	std::ofstream myHeaderFile;
+  	myHeaderFile.open (header_file);
+    myHeaderFile << width<<" "<<num_images<< " 1";
+    myHeaderFile.close();
+
+    delete[] img;
 }
 
 // populate the object with images in stack and set member variables
