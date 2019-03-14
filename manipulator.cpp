@@ -17,8 +17,11 @@ namespace MTNELL004{
 	}
 
 	VolImage::~VolImage(){
-		for(int i=0; i<slices.size(); i++){
-			delete[] slices[i];
+		for(int i=0; i< slices.size(); i++){
+			for(int j = 0; j<height; j++){
+				delete [] slices[i][j];
+			}
+			delete [] slices [i];
 		}
 	}
 
